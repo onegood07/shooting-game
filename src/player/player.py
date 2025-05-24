@@ -13,4 +13,7 @@ class Player:
         self.is_jumping=False
         self.bullets=[] 
 
-    
+    def draw(self, screen):
+        pygame.draw.circle(screen, self.color, (int(self.x), int(self.y)), self.radius)
+        for bullet in self.bullets:
+            bullet.draw(screen)
