@@ -2,8 +2,8 @@
 
 import pygame
 
-GRAVITY = 0.5
-JUMP_POWER = -10
+GRAVITY = 1.0
+JUMP_POWER = -30
 
 class Player:
     def __init__(self):
