@@ -27,9 +27,25 @@ class Player:
         if keys[pygame.K_UP] and not self.is_jumping:
             self.jump_velocity = JUMP_POWER
             self.is_jumping = True
-        
+
         if keys[pygame.K_SPACE]:
             self.shoot()
+
+
+    def update(self):
+        self.handle_input()
+
+        if self.is_jumping:
+            self.y += self.jump_velocity
+            self.jump_velocity += GRAVITY
+
+            if self.y >= 500:
+                self.y = 500
+                self.is_jumping = False
+                self.jump_velocity = 0
+
+        for bullet in self.bullets:
+            bullet.update()
 
 
     def draw(self, screen):
