@@ -73,3 +73,44 @@ class EnemyBase(pygame.sprite.Sprite):
     def fire(self):
         #함수는 자식클래스에서 변경해서 사용
         BulletFromEnemy(self.rect.centerx, self.rect.bottom, vy=0, vx=0)
+
+class EnemyTank(EnemyBase):
+    def __init__(self):
+        super().__init__(color=WHITE)
+        self.fire_interval = 1300
+        self.collider.y = HEIGHT - 40  # 위치 설정시 collider 사용
+
+    def fire(self):
+        BulletFromEnemy(self.collider.centerx, self.collider.top, vy=0, vx=-4)
+
+
+class EnemySpread(EnemyBase):
+    def __init__(self):
+        super().__init__(color=WHITE)
+        self.fire_interval = 1600
+
+    def fire(self):
+        BulletFromEnemy(self.rect.centerx, self.rect.bottom, vy=-1, vx=-3)
+        BulletFromEnemy(self.rect.centerx, self.rect.bottom, vy=0, vx=-3)
+        BulletFromEnemy(self.rect.centerx, self.rect.bottom, vy=1, vx=-3)
+
+
+class EnemyPatroller(EnemyBase):
+    def __init__(self):
+        super().__init__(color=WHITE)
+        self.fire_interval = 1600
+        self.direction = 1  # 1이면 아래, -1이면 위
+        self.move_speed = 1
+        self.top_limit = HEIGHT // 3
+        self.bottom_limit = HEIGHT // 2
+
+    def update(self):
+        # 위아래로 왕복
+        self.rect.y += self.direction * self.move_speed
+        if self.rect.y <= self.top_limit or self.rect.y >= self.bottom_limit:
+            self.direction *= -1
+        super().update()
+
+    def fire(self):
+        # 수직으로 아래 방향 탄환 발사
+        BulletFromEnemy(self.rect.centerx, self.rect.bottom, vy=0, vx=-3)
