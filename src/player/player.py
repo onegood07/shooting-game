@@ -17,6 +17,9 @@ class Player:
         self.jump_velocity=0
         self.is_jumping=False
         self.bullets=[] 
+        self.lives=3
+        self.is_alive=True
+        self.rect=pygame.Rect(self.x-self.radius, self.y-self.radius, self.radius*2, self.radius*2)
 
     def handle_input(self):
         keys = pygame.key.get_pressed()
