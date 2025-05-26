@@ -1,6 +1,8 @@
 # player.py
 
 import pygame
+from .bullet import Bullet
+
 
 GRAVITY = 1.0
 JUMP_POWER = -30
@@ -31,6 +33,10 @@ class Player:
         if keys[pygame.K_SPACE]:
             self.shoot()
 
+    def shoot(self):
+        # 원의 중심에서 총알 생성
+        bullet = Bullet(self.x + self.radius, self.y)
+        self.bullets.append(bullet)
 
     def update(self):
         self.handle_input()
