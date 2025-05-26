@@ -64,3 +64,9 @@ class Player:
         pygame.draw.circle(screen, self.color, (int(self.x), int(self.y)), self.radius)
         for bullet in self.bullets:
             bullet.draw(screen)
+    def take_hit(self):
+        self.lives-=1
+        print(f"남은 목숨: {self.lives}")
+        if self.lives <=0:
+            self.is_alive=False
+            print("플레이어 사망")
