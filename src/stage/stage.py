@@ -35,7 +35,8 @@ def main():
                     if hasattr(player, 'fire'):
                         player.fire()
 
-        # 플레이어 움직임은 호출 안함 (아직 함수 없음)
+        # 플레이어 업데이트 추가 
+        player.update()
 
         if enemy_spawn_timer >= enemy_spawn_interval:
             EnemyBase()
