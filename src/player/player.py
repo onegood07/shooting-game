@@ -55,6 +55,9 @@ class Player:
 
         for bullet in self.bullets:
             bullet.update()
+        self.rect.x=self.x-self.radius
+        self.rect.y=self.y-self.radius
+        
 
 
     def draw(self, screen):
