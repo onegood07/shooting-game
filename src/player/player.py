@@ -1,6 +1,8 @@
 # player.py
 
 import pygame
+from .bullet import Bullet
+
 
 GRAVITY = 1.0
 JUMP_POWER = -30
