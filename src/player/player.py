@@ -2,6 +2,9 @@
 
 import pygame
 
+GRAVITY = 1.0
+JUMP_POWER = -30
+
 class Player:
     def __init__(self):
         self.x=100
@@ -12,6 +15,38 @@ class Player:
         self.jump_velocity=0
         self.is_jumping=False
         self.bullets=[] 
+
+    def handle_input(self):
+        keys = pygame.key.get_pressed()
+
+        if keys[pygame.K_LEFT]:
+            self.x -= self.speed
+        if keys[pygame.K_RIGHT]:
+            self.x += self.speed
+
+        if keys[pygame.K_UP] and not self.is_jumping:
+            self.jump_velocity = JUMP_POWER
+            self.is_jumping = True
+
+        if keys[pygame.K_SPACE]:
+            self.shoot()
+
+
+    def update(self):
+        self.handle_input()
+
+        if self.is_jumping:
+            self.y += self.jump_velocity
+            self.jump_velocity += GRAVITY
+
+            if self.y >= 500:
+                self.y = 500
+                self.is_jumping = False
+                self.jump_velocity = 0
+
+        for bullet in self.bullets:
+            bullet.update()
+
 
     def draw(self, screen):
         pygame.draw.circle(screen, self.color, (int(self.x), int(self.y)), self.radius)
