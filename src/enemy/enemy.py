@@ -1,28 +1,39 @@
-# enemy
-
 import pygame
 import random
-#기본 크기,프레임 블록크기 설정
-WIDTH=1000
-HEIGHT=600
-FPS=60
-SIZE_UNIT=8
+import os
 
-#색깔
+# 현재 스크립트 파일 위치 기준으로 상위 폴더(swopen10)를 찾아 assets 경로 설정
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+SWOPEN10_DIR = os.path.abspath(os.path.join(CURRENT_DIR, '..', '..'))
+ASSET_DIR = os.path.join(SWOPEN10_DIR, 'assets')
+# 기본 설정
+WIDTH = 1000
+HEIGHT = 600
+FPS = 60
+SIZE_UNIT = 8
+INIT_POS = (WIDTH // 2, HEIGHT - 30)
+
+# 색상
 WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
 
+pygame.init()
+score = 0
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("1952 GAME score: " + str(score))
+clock = pygame.time.Clock()
 
-# 이미지 넣을 예정이므로 스프라이트 그룹 사용 
 all_sprites_group = pygame.sprite.Group()
+player_bullet_group = pygame.sprite.Group()
 enemy_group = pygame.sprite.Group()
 enemy_bullet_group = pygame.sprite.Group()
 
-
 class BulletFromEnemy(pygame.sprite.Sprite):
-    def __init__(self, x, y, vy=0, vx=0):
+    def __init__(self, x, y, vy=2, vx=0):
         super().__init__()
-        self.image = pygame.Surface((4, 4))
-        self.image.fill(WHITE)
+        image_path = os.path.join(ASSET_DIR, "bullet.png")
+        self.image = pygame.image.load(image_path).convert_alpha()
+        self.image = pygame.transform.scale(self.image, (4, 4))
         self.rect = self.image.get_rect(center=(x, y))
         self.vx = vx
         self.vy = vy
@@ -33,17 +44,12 @@ class BulletFromEnemy(pygame.sprite.Sprite):
         self.rect.y += self.vy
         self.rect.x += self.vx
 
-
 class EnemyBase(pygame.sprite.Sprite):
-    def __init__(self, color=WHITE, w=SIZE_UNIT * 4, h=SIZE_UNIT*4):
+    def __init__(self, image_path, w=32, h=32):
         super().__init__()
-        self.image = pygame.Surface((w, h))
-        self.image.fill(color)
-
-        # 실제 rect는 유지 (Pygame 스프라이트 필수)
+        self.image = pygame.image.load(image_path).convert_alpha()
+        self.image = pygame.transform.scale(self.image, (w, h))
         self.rect = self.image.get_rect()
-        
-        # 이미지가 들어가 보이는 사이즈가 달라질 예정으로 충돌박스로 이름 변경
         self.collider = self.rect
 
         self.rect.x = WIDTH + random.randint(0, 80)
@@ -53,13 +59,11 @@ class EnemyBase(pygame.sprite.Sprite):
         self.last_fire_time = pygame.time.get_ticks()
         self.fire_interval = 1000
         self.hp = 1
-        #추후 플레이어클래스에 탄환 도입되면 체력관련 추가 예정
 
         all_sprites_group.add(self)
         enemy_group.add(self)
 
     def update(self):
-        #시간에 따른 움직임 구현
         self.rect.x += self.velocity_x
 
         if self.rect.right < 0:
@@ -71,46 +75,70 @@ class EnemyBase(pygame.sprite.Sprite):
             self.last_fire_time = now
 
     def fire(self):
-        #함수는 자식클래스에서 변경해서 사용
-        BulletFromEnemy(self.rect.centerx, self.rect.bottom, vy=0, vx=0)
+        BulletFromEnemy(self.rect.centerx, self.rect.bottom, vy=3)
 
 class EnemyTank(EnemyBase):
     def __init__(self):
-        super().__init__(color=WHITE)
+        image_path = os.path.join(ASSET_DIR, "enemy_t.png")
+        super().__init__(image_path=image_path, w=80, h=80)
         self.fire_interval = 1300
-        self.collider.y = HEIGHT - 40  # 위치 설정시 collider 사용
+        self.collider.y = HEIGHT - 80
 
     def fire(self):
-        BulletFromEnemy(self.collider.centerx, self.collider.top, vy=0, vx=-4)
-
+        BulletFromEnemy(self.collider.centerx, self.collider.centery, vy=0, vx=-4)
 
 class EnemySpread(EnemyBase):
     def __init__(self):
-        super().__init__(color=WHITE)
+        image_path = os.path.join(ASSET_DIR, "enemy_s.png")
+        super().__init__(image_path=image_path, w=48, h=48)
         self.fire_interval = 1600
 
     def fire(self):
-        BulletFromEnemy(self.rect.centerx, self.rect.bottom, vy=-1, vx=-3)
-        BulletFromEnemy(self.rect.centerx, self.rect.bottom, vy=0, vx=-3)
-        BulletFromEnemy(self.rect.centerx, self.rect.bottom, vy=1, vx=-3)
-
+        BulletFromEnemy(self.rect.centerx, self.rect.centery, vy=-1, vx=-3)
+        BulletFromEnemy(self.rect.centerx, self.rect.centery, vy=0, vx=-3)
+        BulletFromEnemy(self.rect.centerx, self.rect.centery, vy=1, vx=-3)
 
 class EnemyPatroller(EnemyBase):
     def __init__(self):
-        super().__init__(color=WHITE)
+        image_path = os.path.join(ASSET_DIR, "enemy_p.png")
+        super().__init__(image_path=image_path, w=48, h=48)
         self.fire_interval = 1600
-        self.direction = 1  # 1이면 아래, -1이면 위
+        self.direction = 1
         self.move_speed = 1
         self.top_limit = HEIGHT // 3
         self.bottom_limit = HEIGHT // 2
 
     def update(self):
-        # 위아래로 왕복
         self.rect.y += self.direction * self.move_speed
         if self.rect.y <= self.top_limit or self.rect.y >= self.bottom_limit:
             self.direction *= -1
         super().update()
 
     def fire(self):
-        # 수직으로 아래 방향 탄환 발사
-        BulletFromEnemy(self.rect.centerx, self.rect.bottom, vy=0, vx=-3)
+        BulletFromEnemy(self.rect.centerx, self.rect.centery, vy=0, vx=-3)
+
+#테스트를 위한 실행코드
+def game_loop():
+    last_spawn_time = pygame.time.get_ticks()
+    spawn_interval = 700
+
+    while True:
+        now = pygame.time.get_ticks()
+        if now - last_spawn_time >= spawn_interval and len(enemy_group) < 10:
+            enemy_class = random.choice([EnemyTank, EnemySpread, EnemyPatroller])
+            enemy_class()
+            last_spawn_time = now
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+
+        screen.fill(BLACK)
+        all_sprites_group.update()
+        all_sprites_group.draw(screen)
+        pygame.display.set_caption("1952 GAME score: " + str(score))
+        pygame.display.flip()
+        clock.tick(FPS)
+
+game_loop()
