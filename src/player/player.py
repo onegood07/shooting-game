@@ -2,10 +2,13 @@
 
 import pygame
 from .bullet import Bullet
+import os
+
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+SWOPEN10_DIR = os.path.abspath(os.path.join(CURRENT_DIR, '..', '..'))
+ASSET_DIR = os.path.join(SWOPEN10_DIR, 'assets')
 
 
-GRAVITY = 1.0
-JUMP_POWER = -30
 
 class Player:
     def __init__(self):
@@ -14,14 +17,17 @@ class Player:
         self.radius = 25
         self.color = (0,255,0)
         self.speed=5
-        self.jump_velocity=0
-        self.is_jumping=False
+       
         self.bullets=[] 
         self.lives=3
         self.is_alive=True
         self.rect=pygame.Rect(self.x-self.radius, self.y-self.radius, self.radius*2, self.radius*2)
         self.shoot_cooldown = 300  # 밀리초 단위 (예: 0.3초)
         self.last_shot_time = 0
+
+        image_path = os.path.join(ASSET_DIR, "player.png")
+        self.image = pygame.image.load(image_path).convert_alpha()
+        self.image = pygame.transform.scale(self.image, (self.radius * 2, self.radius * 2))
 
 
     def handle_input(self):
@@ -60,7 +66,7 @@ class Player:
 
 
     def draw(self, screen):
-        pygame.draw.circle(screen, self.color, (int(self.x), int(self.y)), self.radius)
+        screen.blit(self.image, (int(self.x - self.radius), int(self.y - self.radius)))
         for bullet in self.bullets:
             bullet.draw(screen)
     def take_hit(self):
