@@ -117,28 +117,3 @@ class EnemyPatroller(EnemyBase):
     def fire(self):
         BulletFromEnemy(self.rect.centerx, self.rect.centery, vy=0, vx=-3)
 
-#테스트를 위한 실행코드
-def game_loop():
-    last_spawn_time = pygame.time.get_ticks()
-    spawn_interval = 700
-
-    while True:
-        now = pygame.time.get_ticks()
-        if now - last_spawn_time >= spawn_interval and len(enemy_group) < 10:
-            enemy_class = random.choice([EnemyTank, EnemySpread, EnemyPatroller])
-            enemy_class()
-            last_spawn_time = now
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                quit()
-
-        screen.fill(BLACK)
-        all_sprites_group.update()
-        all_sprites_group.draw(screen)
-        pygame.display.set_caption("1952 GAME score: " + str(score))
-        pygame.display.flip()
-        clock.tick(FPS)
-
-game_loop()
