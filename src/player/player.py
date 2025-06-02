@@ -20,6 +20,9 @@ class Player:
         self.lives=3
         self.is_alive=True
         self.rect=pygame.Rect(self.x-self.radius, self.y-self.radius, self.radius*2, self.radius*2)
+        self.shoot_cooldown = 300  # 밀리초 단위 (예: 0.3초)
+        self.last_shot_time = 0
+
 
     def handle_input(self):
         keys = pygame.key.get_pressed()
@@ -39,9 +42,12 @@ class Player:
             self.shoot()
 
     def shoot(self):
-        # 원의 중심에서 총알 생성
-        bullet = Bullet(self.x + self.radius, self.y)
-        self.bullets.append(bullet)
+        current_time = pygame.time.get_ticks()
+        if current_time - self.last_shot_time >= self.shoot_cooldown:
+            bullet = Bullet(self.x + self.radius, self.y)
+            self.bullets.append(bullet)
+            self.last_shot_time = current_time
+
 
     def update(self):
         self.handle_input()
