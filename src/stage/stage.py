@@ -1,5 +1,5 @@
 from ..player.player import Player
-from ..enemy.enemy import EnemyBase, enemy_group, enemy_bullet_group, all_sprites_group
+from ..enemy.enemy import EnemyBase, EnemyTank,  EnemySpread, EnemyPatroller, enemy_group, enemy_bullet_group, all_sprites_group
 import pygame
 import random
 
@@ -36,7 +36,8 @@ def main():
         all_sprites_group.update()
 
         if enemy_spawn_timer >= enemy_spawn_interval:
-            EnemyBase()
+            enemy_class = random.choice([EnemyTank, EnemySpread, EnemyPatroller])
+            enemy_class()
             enemy_spawn_timer = 0
 
         # --- 🔺 충돌 검사: 내 총알 vs 적 ---
