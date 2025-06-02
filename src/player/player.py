@@ -17,7 +17,10 @@ class Player:
         self.radius = 25
         self.color = (0,255,0)
         self.speed=5
-       
+        image_path = os.path.join(ASSET_DIR, "player.png")
+        self.image = pygame.image.load(image_path).convert_alpha()
+        self.image = pygame.transform.scale(self.image, (self.radius * 2, self.radius * 2))
+        
         self.bullets=[] 
         self.lives=3
         self.is_alive=True
@@ -25,10 +28,7 @@ class Player:
         self.shoot_cooldown = 300  # 밀리초 단위 (예: 0.3초)
         self.last_shot_time = 0
 
-        image_path = os.path.join(ASSET_DIR, "player.png")
-        self.image = pygame.image.load(image_path).convert_alpha()
-        self.image = pygame.transform.scale(self.image, (self.radius * 2, self.radius * 2))
-
+        
 
     def handle_input(self):
         keys = pygame.key.get_pressed()
@@ -39,9 +39,9 @@ class Player:
             self.x += self.speed
 
         if keys[pygame.K_UP]:
-            self.y+= self.speed
-        if keys[pygame.K_DOWN]:
             self.y-= self.speed
+        if keys[pygame.K_DOWN]:
+            self.y+= self.speed
      
 
         if keys[pygame.K_SPACE]:
@@ -69,9 +69,15 @@ class Player:
         screen.blit(self.image, (int(self.x - self.radius), int(self.y - self.radius)))
         for bullet in self.bullets:
             bullet.draw(screen)
+        
+
+
     def take_hit(self):
         self.lives-=1
         print(f"남은 목숨: {self.lives}")
         if self.lives <=0:
             self.is_alive=False
             print("플레이어 사망")
+
+
+
