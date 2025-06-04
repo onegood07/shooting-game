@@ -26,9 +26,10 @@
 
 ## 📸 게임 화면
 **➡️ 게임 화면 사진**
-<img width="996" alt="스크린샷 2025-06-02 오후 7 21 17" src="https://github.com/user-attachments/assets/e38055c2-ff7f-41a1-9988-d08353906a98" />
+<img width="998" alt="스크린샷 2025-06-04 오후 6 32 02" src="https://github.com/user-attachments/assets/feeabdec-8acf-4e25-a07b-7f844b18b79d" />
+
 **➡️ 게임 플레이 영상 <br>**
-https://github.com/user-attachments/assets/3fb03895-d102-42e3-bb21-e1006ffedbf2
+https://github.com/user-attachments/assets/5383106f-8a2d-4590-8bc5-2e87dbc7ece0
 
 -----
 
