@@ -1,7 +1,16 @@
 import random
 import pygame
+import os
 from ..player.player import Player
-from ..enemy.enemy import EnemyBase, EnemyTank, EnemySpread, EnemyPatroller, all_sprites_group, enemy_group, enemy_bullet_group
+from ..enemy.enemy import (
+    EnemyBase,
+    EnemyTank,
+    EnemySpread,
+    EnemyPatroller,
+    all_sprites_group,
+    enemy_group,
+    enemy_bullet_group
+)
 
 WIDTH = 1000
 HEIGHT = 600
@@ -15,6 +24,12 @@ def main():
     pygame.display.set_caption("슈팅게임")
     clock = pygame.time.Clock()
     font = pygame.font.SysFont(None, 36)
+
+    # 📌 배경 이미지 로드
+    current_path = os.path.dirname(__file__)
+    bg_path = os.path.join(current_path, '../../assets/stageBackground.png')
+    background_image = pygame.image.load(bg_path).convert()
+    background_image = pygame.transform.scale(background_image, (WIDTH, HEIGHT))
 
     player = Player()
     player_life = 3
@@ -32,9 +47,9 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
 
-            # 일시정지 토글 처리
+            # 일시정지 토글
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_p:  # P 키로 일시정지/재개
+                if event.key == pygame.K_p:
                     paused = not paused
 
         if not paused:
@@ -48,15 +63,15 @@ def main():
                 enemy_class()
                 enemy_spawn_timer = 0
 
-            # 1) 플레이어 총알과 적 충돌 검사
-            for bullet in player.bullets[:]:  # 복사본으로 안전하게 반복
+            # 플레이어 총알 - 적 충돌
+            for bullet in player.bullets[:]:
                 for enemy in enemy_group:
-                    if bullet.rect.colliderect(enemy.rect):  # 충돌 판정
+                    if bullet.rect.colliderect(enemy.rect):
                         enemy.kill()
                         player.bullets.remove(bullet)
-                        break  # 총알 하나는 하나 적만 맞게 처리
+                        break
 
-            # 2) 적 총알과 플레이어 충돌 검사
+            # 적 총알 - 플레이어 충돌
             player_rect = pygame.Rect(player.x - player.radius, player.y - player.radius, player.radius * 2, player.radius * 2)
             for bullet in enemy_bullet_group:
                 if bullet.rect.colliderect(player_rect):
@@ -67,12 +82,12 @@ def main():
                         running = False
                     break
 
-        # 화면 그리기
-        screen.fill(BLACK)
+        # 🔄 화면 그리기
+        screen.blit(background_image, (0, 0))  # 배경 이미지 먼저
         player.draw(screen)
         all_sprites_group.draw(screen)
 
-        # 일시정지 상태 표시
+        # 일시정지 표시
         if paused:
             pause_text = font.render("PAUSED", True, WHITE)
             rect = pause_text.get_rect(center=(WIDTH // 2, HEIGHT // 2))
@@ -88,4 +103,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
